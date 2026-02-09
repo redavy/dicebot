@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+MIN_DICE_VALUE = 1
+MAX_DICE_VALUE = 6
+
+MAX_ATTEMPTS = 50
+
 SESSION_NAME = os.getenv("SESSION_NAME")
 API_ID = os.getenv("TELEGRAM_API_ID")
 API_HASH = os.getenv("TELEGRAM_API_HASH")
@@ -39,7 +44,7 @@ async def dice(client: Client, message: types.Message):
             return
 
         target = int(args[1])
-        if target < 1 or target > 6:
+        if target < MIN_DICE_VALUE or target > MAX_DICE_VALUE:
             await message.edit("Target num must be from 1 to 6")
             await asyncio.sleep(2)
             await message.delete()
@@ -48,9 +53,7 @@ async def dice(client: Client, message: types.Message):
         await message.delete()
 
         attempts = 0
-        max_attempts = 50
-
-        while attempts < max_attempts:
+        while attempts < MAX_ATTEMPTS:
             attempts += 1
             
             dice = await client.send_dice(
